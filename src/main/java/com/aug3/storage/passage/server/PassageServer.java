@@ -44,7 +44,7 @@ public class PassageServer {
 		try {
 
 			TSSLTransportFactory.TSSLTransportParameters params = new TSSLTransportFactory.TSSLTransportParameters();
-			params.setKeyStore(this.getClass().getResource("/key/keystore.jks").getPath(), "chin@sc0pe");
+			params.setKeyStore(this.getClass().getResource("/key/keystore.jks").getPath(), "mypassword");
 
 			TServerSocket serverTransport = TSSLTransportFactory.getServerSocket(port, 30000,
 					InetAddress.getByName(server), params);
