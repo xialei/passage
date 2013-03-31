@@ -53,7 +53,7 @@ public class PassageClient {
 		try {
 
 			TSSLTransportFactory.TSSLTransportParameters params = new TSSLTransportFactory.TSSLTransportParameters();
-			params.setTrustStore(this.getClass().getResource("/key/truststore.jks").getPath(), "chin@sc0pe");
+			params.setTrustStore(this.getClass().getResource("/key/truststore.jks").getPath(), "mypassword");
 
 			transport = TSSLTransportFactory.getClientSocket(server, port, 30000, params);
 			TProtocol protocol = new TBinaryProtocol(transport);
