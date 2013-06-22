@@ -9,30 +9,29 @@ import com.aug3.storage.passage.thrift.Strategy;
 
 public class ListObjectAction implements Action {
 
-	private Strategy strategy;
+    private Strategy strategy;
 
-	private List<String> key;
+    private List<String> key;
 
-	@Override
-	public void perform(Client client) throws TException {
-		client.listObject(strategy, key);
+    @Override
+    public Object perform(Client client) throws TException {
+        return client.listObject(strategy, key);
+    }
 
-	}
+    public Strategy getStrategy() {
+        return strategy;
+    }
 
-	public Strategy getStrategy() {
-		return strategy;
-	}
+    public void setStrategy(Strategy strategy) {
+        this.strategy = strategy;
+    }
 
-	public void setStrategy(Strategy strategy) {
-		this.strategy = strategy;
-	}
+    public List<String> getKey() {
+        return key;
+    }
 
-	public List<String> getKey() {
-		return key;
-	}
-
-	public void setKey(List<String> key) {
-		this.key = key;
-	}
+    public void setKey(List<String> key) {
+        this.key = key;
+    }
 
 }

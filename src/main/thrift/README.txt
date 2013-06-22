@@ -1,24 +1,24 @@
-﻿Secure an Apache Thrift Service
+Secure an Apache Thrift Service
 
 You need to have a key store with server private key at server-side and a trust store containing server’s public key at client side. For this example let’s create a key store and trust store using JDK keytool.
 
 ===Step 1:
 $ keytool -genkeypair -alias certificatekey -keyalg RSA -validity 7 -keystore keystore.jks
-输入keystore密码：  mypassword
-再次输入新密码: mypassword
+输入keystore密码：  chin@sc0pe
+再次输入新密码: chin@sc0pe
 您的名字与姓氏是什么？
   [Unknown]：  Roger
 您的组织单位名称是什么？
-  [Unknown]：  myorg
+  [Unknown]：  Chinascope
 您的组织名称是什么？
-  [Unknown]：  myorg
+  [Unknown]：  Chinascope
 您所在的城市或区域名称是什么？
   [Unknown]：  SH
 您所在的州或省份名称是什么？
   [Unknown]：  SH
 该单位的两字母国家代码是什么
   [Unknown]：  China
-CN=Roger, OU=myorg, O=myorg, L=SH, ST=SH, C=China 正确吗？
+CN=Roger, OU=Chinascope, O=Chinascope, L=SH, ST=SH, C=China 正确吗？
   [否]：  y
 
 输入<certificatekey>的主密码
@@ -32,7 +32,7 @@ Give a suitable password and answers to the prompts. After that it will create t
 Export the certificate (cret.cer) containing the public key from the key store using following command.
 
 $ keytool -export -alias certificatekey -keystore keystore.jks -rfc -file cert.cer
-输入keystore密码：  mypassword
+输入keystore密码：  chin@sc0pe
 保存在文件中的认证 <cert.cer>
 
 
@@ -40,10 +40,10 @@ $ keytool -export -alias certificatekey -keystore keystore.jks -rfc -file cert.c
 Now let’s create the trust store (truststore.jks) and import the certificate to it. This can be done using single command line as given below.
 
 $ keytool -import -alias certificatekey -file cert.cer -keystore truststore.jks
-输入keystore密码：  mypassword
-再次输入新密码: mypassword
-所有者:CN=Roger, OU=myorg, O=myorg, L=SH, ST=SH, C=China
-签发人:CN=Roger, OU=myorg, O=myorg, L=SH, ST=SH, C=China
+输入keystore密码：  chin@sc0pe
+再次输入新密码: chin@sc0pe
+所有者:CN=Roger, OU=Chinascope, O=Chinascope, L=SH, ST=SH, C=China
+签发人:CN=Roger, OU=Chinascope, O=Chinascope, L=SH, ST=SH, C=China
 序列号:5156cfcf
 有效期: Sat Mar 30 19:43:11 CST 2013 至Sat Apr 06 19:43:11 CST 2013
 证书指纹:

@@ -18,22 +18,35 @@ import com.aug3.storage.passage.thrift.SObject;
 public class HafsHandler implements RequestHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(HafsHandler.class);
-	
+
 	@Override
 	public boolean putObject(String bucketName, String key, byte[] data) {
 
 		File f = new File(validateObjKey(bucketName, key));
-		try {
-			FileOutputStream fos = new FileOutputStream(f);
-			fos.write(data);
-			fos.flush();
-			fos.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+
+		File folder = new File(f.getParent());
+		boolean exists = true;
+		if (!folder.exists()) {
+			exists = folder.mkdirs();
+			log.info("create folder[" + folder.getPath() + "]");
 		}
-		return true;
+
+		if (exists) {
+			FileOutputStream fos = null;
+			try {
+				fos = new FileOutputStream(f);
+				fos.write(data);
+				fos.flush();
+				fos.close();
+			} catch (FileNotFoundException e) {
+				log.info(e.getMessage());
+			} catch (IOException e) {
+				log.error(e.getMessage());
+			}
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**

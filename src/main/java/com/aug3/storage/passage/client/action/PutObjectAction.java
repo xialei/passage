@@ -8,28 +8,28 @@ import com.aug3.storage.passage.thrift.Strategy;
 
 public class PutObjectAction implements Action {
 
-	private Strategy strategy;
-	private SObject sObj;
+    private Strategy strategy;
+    private SObject sObj;
 
-	@Override
-	public void perform(Client client) throws TException {
-		client.putObject(strategy, sObj);
-	}
+    @Override
+    public Object perform(Client client) throws TException {
+        return client.putObject(strategy, sObj);
+    }
 
-	public Strategy getStrategy() {
-		return strategy;
-	}
+    public Strategy getStrategy() {
+        return strategy;
+    }
 
-	public void setStrategy(Strategy strategy) {
-		this.strategy = strategy;
-	}
+    public void setStrategy(Strategy strategy) {
+        this.strategy = strategy;
+    }
 
-	public SObject getsObj() {
-		return sObj;
-	}
+    public SObject getsObj() {
+        return sObj;
+    }
 
-	public void setsObj(SObject sObj) {
-		this.sObj = sObj;
-	}
+    public void setsObj(SObject sObj) {
+        this.sObj = sObj;
+    }
 
 }

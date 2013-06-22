@@ -19,6 +19,7 @@ public class PassageServer {
 
 	private String server = ConfigManager.getProperty("passage.server");
 	private int port = ConfigManager.getIntProperty("passage.port", 8888);
+	private static boolean security = ConfigManager.getBooleanProperty("passage.security", false);
 
 	public void startServer() {
 		try {
@@ -44,7 +45,7 @@ public class PassageServer {
 		try {
 
 			TSSLTransportFactory.TSSLTransportParameters params = new TSSLTransportFactory.TSSLTransportParameters();
-			params.setKeyStore(this.getClass().getResource("/key/keystore.jks").getPath(), "mypassword");
+			params.setKeyStore(this.getClass().getResource("/key/keystore.jks").getPath(), "chin@sc0pe");
 
 			TServerSocket serverTransport = TSSLTransportFactory.getServerSocket(port, 30000,
 					InetAddress.getByName(server), params);
@@ -65,7 +66,12 @@ public class PassageServer {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		new PassageServer().startServerInSecureMode();
+		PassageServer server = new PassageServer();
+		if(security){
+			server.startServerInSecureMode();
+		}else{
+			server.startServer();
+		}
 
 	}
 

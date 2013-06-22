@@ -1,10 +1,6 @@
 package com.aug3.storage.passage.client;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -22,97 +18,102 @@ import com.aug3.storage.passage.thrift.Storage;
 import com.aug3.storage.passage.thrift.Strategy;
 import com.aug3.storage.passage.util.ConfigManager;
 
-public class PassageClient {
+public class PassageClient implements Serializable {
 
-	private static String server = ConfigManager.getProperty("passage.server");
-	private static int port = ConfigManager.getIntProperty("passage.port", 8888);
+    private static final long serialVersionUID = -2805284943658356093L;
 
-	public void passageHandler(Action action) {
+    private static String server = ConfigManager.getProperty("passage.server");
+    private static int port = ConfigManager.getIntProperty("passage.port", 8888);
 
-		TTransport transport = new TSocket(server, port);
+    public Object perform(Action action) {
 
-		TProtocol protocol = new TBinaryProtocol(transport);
+        TTransport transport = new TSocket(server, port);
 
-		PassageService.Client client = new PassageService.Client(protocol);
+        TProtocol protocol = new TBinaryProtocol(transport);
 
-		try {
-			transport.open();
-			action.perform(client);
-		} catch (TTransportException e) {
-			e.printStackTrace();
-		} catch (TException e) {
-			e.printStackTrace();
-		}
+        PassageService.Client client = new PassageService.Client(protocol);
 
-		transport.close();
+        try {
+            transport.open();
+            return action.perform(client);
+        } catch (TTransportException e) {
+            e.printStackTrace();
+        } catch (TException e) {
+            e.printStackTrace();
+        } finally {
+            transport.close();
+        }
+        return null;
+    }
 
-	}
+    public Object securePerform(Action action) {
+        TTransport transport = null;
+        try {
 
-	public void passageInvoker(Action action) {
-		TTransport transport;
-		try {
+            TSSLTransportFactory.TSSLTransportParameters params = new TSSLTransportFactory.TSSLTransportParameters();
+            params.setTrustStore(this.getClass().getResource("/key/truststore.jks").getPath(), "chin@sc0pe");
 
-			TSSLTransportFactory.TSSLTransportParameters params = new TSSLTransportFactory.TSSLTransportParameters();
-			params.setTrustStore(this.getClass().getResource("/key/truststore.jks").getPath(), "mypassword");
+            transport = TSSLTransportFactory.getClientSocket(server, port, 30000, params);
+            TProtocol protocol = new TBinaryProtocol(transport);
 
-			transport = TSSLTransportFactory.getClientSocket(server, port, 30000, params);
-			TProtocol protocol = new TBinaryProtocol(transport);
+            PassageService.Client client = new PassageService.Client(protocol);
 
-			PassageService.Client client = new PassageService.Client(protocol);
+            return action.perform(client);
+        } catch (TTransportException e) {
+            e.printStackTrace();
+        } catch (TException e) {
+            e.printStackTrace();
+        } finally {
+            if (transport != null) {
+                transport.close();
+            }
+        }
+        return null;
+    }
 
-			action.perform(client);
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        Strategy strategy = new Strategy();
+        strategy.setBucketName("D://received//gen-java//");
+        strategy.setSType(Storage.HAFS);
 
-			transport.close();
-		} catch (TTransportException e) {
-			e.printStackTrace();
-		} catch (TException e) {
-			e.printStackTrace();
-		}
-	}
+        SObject sObj = new SObject();
+        sObj.setKey("abc.pdf");
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		Strategy strategy = new Strategy();
-		strategy.setBucketName("D://received//gen-java//");
-		strategy.setSType(Storage.HAFS);
+        long t1 = System.currentTimeMillis();
 
-		SObject sObj = new SObject();
-		sObj.setKey("abc.pdf");
+        try {
+            BufferedInputStream in = new BufferedInputStream(new FileInputStream("D://work//diveintopythonzh-cn.pdf"));
+            ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
 
-		long t1 = System.currentTimeMillis();
+            byte[] temp = new byte[1024];
+            int size = 0;
+            while ((size = in.read(temp)) != -1) {
+                out.write(temp, 0, size);
+            }
+            in.close();
 
-		try {
-			BufferedInputStream in = new BufferedInputStream(new FileInputStream("D://work//diveintopythonzh-cn.pdf"));
-			ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
+            byte[] content = out.toByteArray();
 
-			byte[] temp = new byte[1024];
-			int size = 0;
-			while ((size = in.read(temp)) != -1) {
-				out.write(temp, 0, size);
-			}
-			in.close();
+            sObj.setData(content);
 
-			byte[] content = out.toByteArray();
+            PutObjectAction a = new PutObjectAction();
+            a.setStrategy(strategy);
+            a.setsObj(sObj);
 
-			sObj.setData(content);
+            new PassageClient().securePerform(a);
 
-			PutObjectAction a = new PutObjectAction();
-			a.setStrategy(strategy);
-			a.setsObj(sObj);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-			new PassageClient().passageInvoker(a);
+        long t2 = System.currentTimeMillis();
+        System.out.println(t2 - t1);
 
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		long t2 = System.currentTimeMillis();
-		System.out.println(t2 - t1);
-
-	}
+    }
 
 }

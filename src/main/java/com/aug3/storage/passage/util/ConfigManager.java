@@ -2,7 +2,7 @@ package com.aug3.storage.passage.util;
 
 public class ConfigManager {
 
-	private static final String[] propertyFiles = { "/fsclient.properties" };
+	private static final String[] propertyFiles = { "/passage.properties" };
 	public static ConfigProperties config = new ConfigProperties(propertyFiles);
 
 	public static String getProperty(String key, String defaultValue) {
