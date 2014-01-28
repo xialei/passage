@@ -20,5 +20,6 @@ service PassageService {
 	SObject getObject(1: Strategy strategy, 2: string key),
 	list<SObject> listObject(1: Strategy strategy, 2: list<string> key),
 	bool deleteObject(1: Strategy strategy, 2: string key),
-	bool isObjectInBucket(1: Strategy strategy, 2: string key)
+	bool isObjectInBucket(1: Strategy strategy, 2: string key),
+	bool createImg(1: Strategy strategy, 2: string key)
 }

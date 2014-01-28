@@ -71,21 +71,9 @@ public class PassageClient implements Serializable {
         return null;
     }
 
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
-        Strategy strategy = new Strategy();
-        strategy.setBucketName("D://received//gen-java//");
-        strategy.setSType(Storage.HAFS);
-
-        SObject sObj = new SObject();
-        sObj.setKey("abc.pdf");
-
-        long t1 = System.currentTimeMillis();
-
         try {
-            BufferedInputStream in = new BufferedInputStream(new FileInputStream("D://work//diveintopythonzh-cn.pdf"));
+            BufferedInputStream in = new BufferedInputStream(new FileInputStream("D://test//1.pdf"));
             ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
 
             byte[] temp = new byte[1024];
@@ -97,23 +85,25 @@ public class PassageClient implements Serializable {
 
             byte[] content = out.toByteArray();
 
+            PassageClient passageClient = new PassageClient();
+
+            Strategy strategy = new Strategy();
+            strategy.setBucketName("/mfs/d01/");
+            strategy.setSType(Storage.HAFS);
+
+            SObject sObj = new SObject();
+            sObj.setKey("/announce_test_1/abc.pdf");
             sObj.setData(content);
 
-            PutObjectAction a = new PutObjectAction();
-            a.setStrategy(strategy);
-            a.setsObj(sObj);
-
-            new PassageClient().securePerform(a);
-
+            PutObjectAction putAction = new PutObjectAction();
+            putAction.setStrategy(strategy);
+            putAction.setsObj(sObj);
+            passageClient.perform(putAction);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        long t2 = System.currentTimeMillis();
-        System.out.println(t2 - t1);
-
     }
-
 }

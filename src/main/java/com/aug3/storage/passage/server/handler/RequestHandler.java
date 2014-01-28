@@ -16,4 +16,5 @@ public interface RequestHandler {
 
 	public boolean isObjectInBucket(String bucketName, String key);
 	
+	public boolean createImg(String bucketName, String key);
 }

@@ -166,4 +166,10 @@ public class S3Handler implements RequestHandler {
 		return key;
 	}
 
+    @Override
+    public boolean createImg(String bucketName, String key) {
+        // return false directly, because VSTO team won't operate S3 directly
+        return false;
+    }
+
 }
